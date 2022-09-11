@@ -1,4 +1,4 @@
-package org.duo.weblog;
+package org.duo.weblog.preprocess;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -73,10 +73,10 @@ public class WeblogPreProcess {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(NullWritable.class);
 
-//		 FileInputFormat.setInputPaths(job, new Path(args[0]));
-//		 FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        FileInputFormat.setInputPaths(job, new Path(inPath));
-        FileOutputFormat.setOutputPath(job, new Path(outpath));
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+//        FileInputFormat.setInputPaths(job, new Path(inPath));
+//        FileOutputFormat.setOutputPath(job, new Path(outpath));
 
         job.setNumReduceTasks(0);
 

@@ -11,7 +11,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.duo.weblog.WebLogBean;
+import org.duo.weblog.preprocess.WebLogBean;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -205,8 +205,11 @@ public class ClickStreamPageView {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        FileInputFormat.setInputPaths(job, new Path("D:\\out\\weblog"));
-        FileOutputFormat.setOutputPath(job, new Path("D:\\out\\pageviews"));
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        //FileInputFormat.setInputPaths(job, new Path("D:\\out\\weblog"));
+        //FileOutputFormat.setOutputPath(job, new Path("D:\\out\\pageviews"));
 
         job.waitForCompletion(true);
 

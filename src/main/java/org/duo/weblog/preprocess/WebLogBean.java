@@ -1,4 +1,4 @@
-package org.duo.weblog;
+package org.duo.weblog.preprocess;
 
 import org.apache.hadoop.io.Writable;
 

@@ -1,4 +1,4 @@
-package org.duo.weblog;
+package org.duo.weblog.preprocess;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
