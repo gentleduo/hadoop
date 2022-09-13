@@ -33,6 +33,7 @@ org\duo\flumesource\MySqlSource.class
 org\duo\flumesource\QueryMySql.class
 org\duo\grouping\OrderPartition.class
 org\duo\outputformat\MyOutputFormat.class
+org\duo\hbase\HBaseOperate.class
 org\duo\sort\JobMain.class
 org\duo\flowcount\sort\FlowSortMapper.class
 org\duo\flowcount\partition\JobMain.class

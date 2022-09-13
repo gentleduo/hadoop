@@ -49,6 +49,7 @@ D:\intellij-workspace\hadoop\src\main\java\org\duo\flumesource\MySqlSource.java
 D:\intellij-workspace\hadoop\src\main\java\org\duo\hive\udf\UAParseUDF.java
 D:\intellij-workspace\hadoop\src\main\java\org\duo\mapreduce\WordCountReducer.java
 D:\intellij-workspace\hadoop\src\main\java\org\duo\flowcount\partition\FlowCountMapper.java
+D:\intellij-workspace\hadoop\src\main\java\org\duo\hbase\HBaseOperate.java
 D:\intellij-workspace\hadoop\src\main\java\org\duo\inputformat\MyInputFormat.java
 D:\intellij-workspace\hadoop\src\main\java\org\duo\weblog\preprocess\WeblogPreProcess.java
 D:\intellij-workspace\hadoop\src\main\java\org\duo\map_join\MapJoinMapper.java
