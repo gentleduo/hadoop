@@ -27,11 +27,11 @@ public class WeiBoHBase {
 
         WeiBoHBase weiBoHBase = new WeiBoHBase();
         //weiBoHBase.initNameSpace();
-        weiBoHBase.creatTableeContent();
-        weiBoHBase.createTableRelations();
-        weiBoHBase.createTableReceiveContentEmails();
+        //weiBoHBase.creatTableeContent();
+        //weiBoHBase.createTableRelations();
+        //weiBoHBase.createTableReceiveContentEmails();
         //发送微博
-        // weiBoHBase.publishWeibo("M","今天天气还不错MMM");
+        weiBoHBase.publishWeibo("M", "今天天气还不错MMM");
         //  weiBoHBase.addAttends("1","2","3","M");
 
         //取消关注
@@ -42,7 +42,6 @@ public class WeiBoHBase {
 
 
     }
-
 
     /**
      * 获取关注人的微博内容
@@ -60,7 +59,6 @@ public class WeiBoHBase {
 
         //将我们所有查询到的rowkey全部都封装到list集合里面去
         ArrayList<Get> rowkeysList = new ArrayList<>();
-
 
         Result result = receive_content_email.get(get);
         Cell[] cells = result.rawCells();
@@ -81,7 +79,6 @@ public class WeiBoHBase {
         }
     }
 
-
     /**
      * 取消关注逻辑 A 取消关注B,C,D
      * 第一步：在weibo:relation表当中取消关注的用户，将attends列族里面关注的人，都给删除掉
@@ -89,10 +86,10 @@ public class WeiBoHBase {
      * 第三步：在weibo:receive_content_email表当中将我们A用户获取B,C,D的关系给删除掉
      */
     public void cancelAttends(String uid, String... attends) throws IOException {
+
         //第一步：删除关注的人
         Connection connection = getConnection();
         Table table_relation = connection.getTable(TableName.valueOf(TABLE_RELATION));
-
         //删除A，关注的B,C,D用户
         for (String cancelAttends : attends) {
             Delete delete = new Delete(uid.getBytes());
@@ -100,7 +97,6 @@ public class WeiBoHBase {
 
             table_relation.delete(delete);
         }
-
 
         //第二步：B,C,D这三个用户移除粉丝A
         for (String cancelAttend : attends) {
@@ -110,25 +106,18 @@ public class WeiBoHBase {
         }
 
         //第三步：A用户不需要再收到B,C,D发送的微博内容，需要删除receive_content_email表当中对应的rowkey数据
-
         Table table_receive_content_email = connection.getTable(TableName.valueOf(TABLE_RECEIVE_CONTENT_EMAIL));
-
         for (String attend : attends) {
 
             Delete delete = new Delete(uid.getBytes());
             delete.addColumn("info".getBytes(), attend.getBytes());
-
             table_receive_content_email.delete(delete);
-
         }
 
         table_receive_content_email.close();
         table_relation.close();
         connection.close();
-
-
     }
-
 
     /**
      * 实现关注用户的逻辑
@@ -144,10 +133,8 @@ public class WeiBoHBase {
         //第一步：用户uid关注了一批人  attends，需要将关系保存起来，保存到weibo:relation表里面去，以用户id作为rowkey，关注了哪些人的id作为
         //列名，关注了哪些人id作为列值，保存到attends里面去
         Connection connection = getConnection();
-
         //记录A用户关注了哪些人
         Table table_relation = connection.getTable(TableName.valueOf(TABLE_RELATION));
-
         Put put = new Put(uid.getBytes());
         //循环遍历所有关注的人
         for (String attend : attends) {
@@ -162,14 +149,11 @@ public class WeiBoHBase {
             table_relation.put(put1);
         }
 
-
         //第三步：A用户关注了B,C,D那么A用户就要获取B,C,D发送的微博内容的rowkey
         Table table_content = connection.getTable(TableName.valueOf(TABLE_CONTENT));
         //以B,C,D用户的id作为查询条件，查询出B,C,D用户发送的所有的微博的rowkey
         Scan scan = new Scan();
         ArrayList<byte[]> rowkeyBytes = new ArrayList<>();
-
-
         for (String attend : attends) {
             //使用用户id+_ 来作为扫描条件，将所有满足条件的数据全部都扫描出来
             RowFilter rowFilter = new RowFilter(CompareOperator.EQUAL, new SubstringComparator(attend + "_"));
@@ -180,12 +164,9 @@ public class WeiBoHBase {
                 byte[] row = result.getRow();
                 rowkeyBytes.add(row);
             }
-
-
         }
 
         ArrayList<Put> recPuts = new ArrayList<>();
-
         //第三步：获取到了所有的B,C,D发送的微博的rowkey，将这些rowkey保存到A用户的收件箱表里面去
         if (rowkeyBytes.size() > 0) {
             Table table_receive_content = connection.getTable(TableName.valueOf(TABLE_RECEIVE_CONTENT_EMAIL));
@@ -208,13 +189,8 @@ public class WeiBoHBase {
             table_content.close();
             table_relation.close();
             connection.close();
-
-
         }
-
-
     }
-
 
     /**
      * 发布微博内容
@@ -234,20 +210,15 @@ public class WeiBoHBase {
         Table table_content = connection.getTable(TableName.valueOf(TABLE_CONTENT));
         //发布微博的rowkey
         String rowkey = uid + "_" + System.currentTimeMillis();
-
         Put put = new Put(rowkey.getBytes());
         put.addColumn("info".getBytes(), "content".getBytes(), System.currentTimeMillis(), content.getBytes());
-
         table_content.put(put);
 
         //第二步：查看用户id他的fans有哪些，查询relation表
         Table table_relation = connection.getTable(TableName.valueOf(TABLE_RELATION));
-
         //查询uid用户有哪些粉丝
         Get get = new Get(uid.getBytes());
         get.addFamily("fans".getBytes());
-
-
         Result result = table_relation.get(get);
         //获取所有的列值，都是uid用户对应的粉丝人
         Cell[] cells = result.rawCells();
@@ -257,37 +228,27 @@ public class WeiBoHBase {
 
         //定义list集合，用于保存uid用户所有的粉丝
         List<byte[]> allFans = new ArrayList<byte[]>();
-
-
         for (Cell cell : cells) {
             //这里是获取我们这个用户有哪些列，列名就是对应我们的粉丝的用户id
             byte[] bytes = CellUtil.cloneQualifier(cell);
             allFans.add(bytes);
         }
 
-
         //第三步：操作recieve_content_email这个表，将用户的所有的粉丝id作为rowkey，然后以用户发送微博的rowkey作为列值，用户id作为列名来保存数据
         Table table_receive_content_email = connection.getTable(TableName.valueOf(TABLE_RECEIVE_CONTENT_EMAIL));
         //遍历所有的粉丝，以粉丝的id作为rowkey
-
         List<Put> putFansList = new ArrayList<Put>();
-
         for (byte[] allFan : allFans) {
             Put put1 = new Put(allFan);
             put1.addColumn("info".getBytes(), uid.getBytes(), System.currentTimeMillis(), rowkey.getBytes());
             putFansList.add(put1);
         }
         table_receive_content_email.put(putFansList);
-
-
         table_receive_content_email.close();
         table_content.close();
         table_relation.close();
         connection.close();
-
-
     }
-
 
     /**
      * 创建微博收件箱表
